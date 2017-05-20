@@ -1,9 +1,10 @@
 from .models import Visit
 from django.http import Http404
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from visits_md.serializers import VisitSerializer
+from django.core.exceptions import ValidationError
 
 
 class VisitList(APIView):

@@ -1,21 +1,24 @@
 from .models import Visit
-from datetime import timedelta
-from rest_framework import status
 from rest_framework import serializers
-from rest_framework.response import Response
-
 
 class VisitSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     start_date = serializers.DateTimeField(format='iso-8601', input_formats=['iso-8601'])
     end_date = serializers.DateTimeField(format='iso-8601', input_formats=['iso-8601'])
 
+    def validate(self, data):
+        """
+        Check thath the start is before the stop
+        """
+
+        if data['start_date'] > data['end_date']:
+            raise serializers.ValidationError("start_date must be before end_date")
+        return data
+
     def create(self, validated_data):
         """
         Create and return a new `Snippet` instance, given the validated data.
         """
-        if validated_data['end_date'] - validated_data['start_date'] < timedelta(0,0):
-            return Response("Start Date > End Date", status=status.HTTP_400_BAD_REQUEST)
         return Visit.objects.create(**validated_data)
 
     def update(self, instance, validated_data):
